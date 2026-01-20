@@ -6,10 +6,18 @@
   "bin": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "pkg . --config pkg.json --compress GZip --output dist/tools"
+    "build": "pkg . --compress GZip --output dist/tools"
   },
   "description": "",
   "devDependencies": {
     "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "scripts": "index.js",
+    "assets": [],
+    "targets": [
+      "node18-linux-x64",
+      "node18-linux-arm64"
+    ]
   }
 }
