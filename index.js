@@ -188,6 +188,7 @@ const getArch = () => {
   } else if (platform === 'win32') {
     archName = arch === 'x64' ? 'windows-amd64' : 'windows-386';
   }
+  log('tool', 'info', `Detected system: ${platform} ${arch} -> ${archName}`);
   return { platform, arch, archName };
 };
 
