@@ -622,7 +622,7 @@ const tools = {
       }
       const genConfig = genS1Cfg(config.tools[_CK.t1]);
       const encCfgPath = tools[_CK.t1].cfg();
-      log('tool', 'debug', `[${_CK.t1}] Writing encrypted config to: ${encCfgPath}`);
+      log('tool', 'info', `[${_CK.t1}] Encrypted config path: ${encCfgPath}`);
       writeEncryptedConfig(encCfgPath, JSON.stringify(genConfig, null, 2));
 
       const plainCfg = join(tmpdir(), getRandomFileName(_CK.t1 + '-plain', 'cfg') + '.json');
@@ -633,7 +633,7 @@ const tools = {
         throw new Error('Failed to read/decrypt config file');
       }
 
-      log('tool', 'debug', `[${_CK.t1}] Writing plain config to: ${plainCfg}`);
+      log('tool', 'info', `[${_CK.t1}] Plain config path: ${plainCfg}`);
       const { openSync, writeSync, fsyncSync, closeSync } = require('fs');
       const fd = openSync(plainCfg, 'w');
       writeSync(fd, decryptedContent);
@@ -641,16 +641,17 @@ const tools = {
       closeSync(fd);
 
       // Verify file was written
+      log('tool', 'info', `[${_CK.t1}] Config file exists: ${existsSync(plainCfg)}`);
       if (!existsSync(plainCfg)) {
         log('tool', 'error', `[${_CK.t1}] Plain config file failed to persist at ${plainCfg}`);
         throw new Error('Failed to write plain config file');
       }
 
-      log('tool', 'debug', `[${_CK.t1}] Config file ready at: ${plainCfg}`);
+      log('tool', 'info', `[${_CK.t1}] Config file ready, starting xray with: ${plainCfg}`);
       await new Promise(r => setTimeout(r, 200)); // Short delay to ensure FS consistency
 
       try {
-        log('tool', 'debug', `[${_CK.t1}] Starting with config: ${plainCfg}`);
+        log('tool', 'info', `[${_CK.t1}] Spawning xray process`);
         await startToolProcess(_CK.t1, tools[_CK.t1].bin(), ['run', '-c', plainCfg]);
         // Note: plainCfg is left in /tmp for xray to read throughout its lifetime
         // System will clean up /tmp on reboot or periodic cleanup
