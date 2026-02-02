@@ -1544,51 +1544,55 @@ const app = (req, res) => {
     return;
   }
 
-  // 主页 - 优先返回工具箱UI (public/index.html)
+  // 主页 - 返回工具箱UI (public/index.html)
   if (path === '/' && method === 'GET') {
-    try {
-      const publicDir = join(ROOT, 'public');
-      const indexPath = join(publicDir, 'index.html');
-      log('http', 'debug', `ROOT: ${ROOT}, looking for: ${indexPath}`);
+    const publicDir = join(ROOT, 'public');
+    const indexPath = join(publicDir, 'index.html');
 
-      if (existsSync(indexPath)) {
+    if (existsSync(indexPath)) {
+      try {
         const content = readFileSync(indexPath);
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.end(content);
-        log('http', 'info', 'Served public/index.html');
         return;
-      } else {
-        log('http', 'warn', `public/index.html not found at: ${indexPath}`);
+      } catch (err) {
+        log('http', 'error', `Error reading index.html: ${err.message}`);
       }
-    } catch (err) {
-      log('http', 'error', `Error serving index.html: ${err.message}`);
     }
-    // 降级：返回404而不是管理页面
-    res.writeHead(404);
-    res.end('Not Found');
+
+    // 如果文件不存在，返回404
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('404 - public/index.html not found');
     return;
   }
 
-  // 管理后台
+  // 管理后台 (仅当明确请求 /admin 时)
   if (path === '/admin' && method === 'GET') {
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(HTML);
     return;
   }
 
-  // 静态文件服务 (API和admin外的所有文件)
-  if (!path.startsWith('/api')) {
+  // 静态文件服务 (从 public 目录提供 CSS, JS 等)
+  if (!path.startsWith('/api') && !path.startsWith('/admin')) {
     const publicDir = join(ROOT, 'public');
     const filePath = join(publicDir, path);
-    // 防止目录遍历
-    if (filePath.startsWith(publicDir) && existsSync(filePath)) {
+
+    // 防止目录遍历攻击
+    if (!filePath.startsWith(publicDir)) {
+      res.writeHead(403);
+      res.end('Forbidden');
+      return;
+    }
+
+    if (existsSync(filePath)) {
       try {
         const stat = require('fs').statSync(filePath);
         if (stat.isFile()) {
           const content = readFileSync(filePath);
           const ext = filePath.split('.').pop().toLowerCase();
           const mimeTypes = {
-            'html': 'text/html',
+            'html': 'text/html; charset=utf-8',
             'css': 'text/css',
             'js': 'application/javascript',
             'json': 'application/json',
@@ -1604,7 +1608,9 @@ const app = (req, res) => {
           res.end(content);
           return;
         }
-      } catch { }
+      } catch (err) {
+        log('http', 'warn', `Error serving ${path}: ${err.message}`);
+      }
     }
   }
 
