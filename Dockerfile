@@ -9,6 +9,7 @@ COPY package.json ./
 # Copy source code
 COPY index.js ./
 COPY config_manager.js ./
+COPY public/ ./public/
 
 # Create data directory and set permissions to avoid EACCES errors
 # We set ownership of the entire /app directory to the 'node' user
