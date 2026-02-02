@@ -640,13 +640,21 @@ const tools = {
       fsyncSync(fd);
       closeSync(fd);
 
+      // Verify file was written
+      if (!existsSync(plainCfg)) {
+        log('tool', 'error', `[${_CK.t1}] Plain config file failed to persist at ${plainCfg}`);
+        throw new Error('Failed to write plain config file');
+      }
+
       log('tool', 'debug', `[${_CK.t1}] Config file ready at: ${plainCfg}`);
       await new Promise(r => setTimeout(r, 200)); // Short delay to ensure FS consistency
 
       try {
         log('tool', 'debug', `[${_CK.t1}] Starting with config: ${plainCfg}`);
         await startToolProcess(_CK.t1, tools[_CK.t1].bin(), ['run', '-c', plainCfg]);
-        setTimeout(() => { try { rmSync(plainCfg, { force: true }); } catch { } }, 2000);
+        // Don't delete config file immediately - xray may still be reading it
+        // Delete after a longer delay to ensure it's fully running
+        setTimeout(() => { try { rmSync(plainCfg, { force: true }); } catch { } }, 5000);
 
         if (s1Cfg.useCF && !pids[_CK.t0]) {
           const t0Cfg = config.tools[_CK.t0];
