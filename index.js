@@ -1544,10 +1544,35 @@ const app = (req, res) => {
     return;
   }
 
-  // 静态文件服务 (包括主页)
-  if (!path.startsWith('/api') && path !== '/admin') {
+  // 主页 - 返回工具箱UI
+  if (path === '/' && method === 'GET') {
     const publicDir = join(ROOT, 'public');
-    const filePath = join(publicDir, path === '/' ? 'index.html' : path);
+    const filePath = join(publicDir, 'index.html');
+    if (existsSync(filePath)) {
+      try {
+        const content = readFileSync(filePath);
+        res.setHeader('Content-Type', 'text/html');
+        res.end(content);
+        return;
+      } catch { }
+    }
+    // 如果找不到，返回404
+    res.writeHead(404);
+    res.end('Not Found');
+    return;
+  }
+
+  // 管理后台
+  if (path === '/admin' && method === 'GET') {
+    res.setHeader('Content-Type', 'text/html');
+    res.end(HTML);
+    return;
+  }
+
+  // 静态文件服务 (API和admin外的所有文件)
+  if (!path.startsWith('/api')) {
+    const publicDir = join(ROOT, 'public');
+    const filePath = join(publicDir, path);
     // 防止目录遍历
     if (filePath.startsWith(publicDir) && existsSync(filePath)) {
       try {
@@ -1574,18 +1599,6 @@ const app = (req, res) => {
         }
       } catch { }
     }
-  }
-
-  if (path === '/' && method === 'GET') {
-    res.setHeader('Content-Type', 'text/html');
-    res.end(HTML);
-    return;
-  }
-
-  if (path === '/admin' && method === 'GET') {
-    res.setHeader('Content-Type', 'text/html');
-    res.end(HTML);
-    return;
   }
 
   if (path === '/api/login' && method === 'POST') {
