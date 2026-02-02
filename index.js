@@ -647,7 +647,7 @@ const tools = {
         throw new Error('Failed to write plain config file');
       }
 
-      log('tool', 'info', `[${_CK.t1}] Config file ready, starting xray with: ${plainCfg}`);
+      log('tool', 'info', `[${_CK.t1}] Config file ready, starting with: ${plainCfg}`);
       await new Promise(r => setTimeout(r, 200));
 
       try {
