@@ -1788,14 +1788,12 @@ const cleanupOrphans = () => {
   try { execSync(process.platform === 'win32' ? 'timeout /t 1' : 'sleep 1'); } catch { }
 };
 const PORT = parseInt(process.env.PORT || process.env.SERVER_PORT || process.env.PRIMARY_PORT, 10) || config.webPort || config.port || 3097;
-console.log(`[DEBUG] PORT env: ${process.env.PORT}, SERVER_PORT env: ${process.env.SERVER_PORT}, Final PORT: ${PORT}`);
-console.log(`[DEBUG] Temporary directory: ${tmpdir()}`);
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Tools Standalone start on port ${PORT}`);
-  log('tool', 'info', `\u4f7f\u7528\u4e34\u65f6\u76ee\u5f55: ${tmpdir()}`);
+  log('tool', 'info', `PORT env: ${process.env.PORT}, SERVER_PORT env: ${process.env.SERVER_PORT}, Final PORT: ${PORT}`);
+  log('tool', 'info', `Temporary directory: ${tmpdir()}`);
+  log('tool', 'info', `\u670d\u52a1\u542f\u52a8\u4e8e\u7aef\u53e3 ${PORT}`);
 
   setTimeout(() => cleanupOrphans(), 1000);
-  log('tool', 'info', `\u670d\u52a1\u542f\u52a8\u4e8e\u7aef\u53e3 ${PORT}`);
 
   for (const [name, cfg] of Object.entries(config.tools)) {
     if (cfg.autoStart && tools[name]) {
