@@ -34,7 +34,7 @@ const _CK = {
   p0: _d('dmxlc3M='),
   p1: _d('dm1lc3M='),
   p2: _d('dHJvamFu'),
-  p3: _d('c2hhZG93c29ja3M='),
+  p3: _d('c29ja3M='),
   p4: _d('aHlzdGVyaWEy'),
   p5: _d('dHVpYw==')
 };
@@ -43,7 +43,7 @@ const _PN = {
   _0: _d('dmxlc3M='),
   _1: _d('dm1lc3M='),
   _2: _d('dHJvamFu'),
-  _3: _d('c2hhZG93c29ja3M='),
+  _3: _d('c29ja3M='),
   _4: _d('aHlzdGVyaWEy'),
   _5: _d('dHVpYw=='),
   _6: _d('ZnJlZWRvbQ=='),
@@ -52,7 +52,7 @@ const _PN = {
   d0: _d('VkxFU1M='),
   d1: _d('Vk1lc3M='),
   d2: _d('VHJvamFu'),
-  d3: _d('U2hhZG93c29ja3M='),
+  d3: _d('U09DS1M1'),
   d4: _d('SHlzdGVyaWEy'),
   d5: _d('VFVJQw==')
 };
@@ -256,12 +256,9 @@ const genS1Cfg = (cfg) => {
     if (!wsEnabled) wsEnabled = true;
   }
   if (protocols[_CK.p3]?.enabled) {
-    const wsPath = protocols[_CK.p3].wsPath || _DP._3;
     inbounds.push({
-      type: _PN._3, tag: _PN._8 + '-in', listen: '::', listen_port: wsEnabled ? port + 3 : port,
-      method: ssMethod || '2022-blake3-aes-256-gcm',
-      [_KW.pw]: password,
-      transport: { type: 'ws', path: wsPath }
+      type: _PN._3, tag: _PN._3 + '-in', listen: '::', listen_port: wsEnabled ? port + 3 : port,
+      users: [{ user: uuid, [_KW.pw]: password }]
     });
   }
   if (hy2?.enabled && hy2?.port) {
@@ -311,9 +308,7 @@ const genShareLinks = (cfg, host = 'your-domain.com') => {
     links.push({ name: _PN.d2, protocol: _PN._2, [_KW.lk]: `${_PN._2}://${password}@${connectAddr}:443?security=tls&sni=${tunnelDomain}&fp=chrome&type=ws&host=${tunnelDomain}&path=${encodeURIComponent(wsPath)}#${encodeURIComponent(nodeName)}` });
   }
   if (protocols[_CK.p3]?.enabled) {
-    const method = ssMethod || 'aes-256-gcm';
-    const ssAuth = Buffer.from(`${method}:${password}`).toString('base64');
-    links.push({ name: _PN.d3, protocol: _PN._8, [_KW.lk]: `${_PN._8}://${ssAuth}@${connectAddr}:443?plugin=${_DL.v2p}%3Btls%3Bhost%3D${tunnelDomain}%3Bpath%3D${encodeURIComponent(protocols[_CK.p3].wsPath || _DP._3)}#${encodeURIComponent(nodeName)}` });
+    links.push({ name: _PN.d3, protocol: _PN._3, [_KW.lk]: `${_PN._3}://${uuid}:${password}@${connectAddr}:${wsEnabled ? port + 3 : port}#${encodeURIComponent(nodeName)}` });
   }
   if (u1?.enabled) {
     links.push({ name: _PN.d4, protocol: _PN._4, [_KW.lk]: `${_PN._4}://${password}@${host}:${u1.port || 20000}/?insecure=1&sni=${tunnelDomain}#${encodeURIComponent(nodeName)}` });
@@ -1583,6 +1578,8 @@ const app = (req, res) => {
     const publicDir = join(ROOT, 'public');
     const indexPath = join(publicDir, 'index.html');
 
+    log('http', 'debug', `Trying to serve index.html from: ${indexPath} (ROOT: ${ROOT})`);
+
     if (existsSync(indexPath)) {
       try {
         const content = readFileSync(indexPath);
@@ -1594,9 +1591,8 @@ const app = (req, res) => {
       }
     }
 
-
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('404 - public/index.html not found');
+    res.end(`404 - public/index.html not found\nPath: ${indexPath}\nROOT: ${ROOT}\nCWD: ${process.cwd()}\nDirname: ${__dirname}`);
     return;
   }
 
