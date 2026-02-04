@@ -257,8 +257,9 @@ const genS1Cfg = (cfg) => {
     if (!wsEnabled) wsEnabled = true;
   }
   if (protocols[_CK.p3]?.enabled) {
+    const socksPort = protocols[_CK.p3].port || (wsEnabled ? port + 3 : port);
     inbounds.push({
-      type: _PN._3, tag: _PN._3 + '-in', listen: '::', listen_port: wsEnabled ? port + 3 : port,
+      type: _PN._3, tag: _PN._3 + '-in', listen: '::', listen_port: socksPort,
       users: [{ user: uuid, [_KW.pw]: password }]
     });
   }
@@ -309,7 +310,8 @@ const genShareLinks = (cfg, host = 'your-domain.com') => {
     links.push({ name: _PN.d2, protocol: _PN._2, [_KW.lk]: `${_PN._2}://${password}@${connectAddr}:443?security=tls&sni=${tunnelDomain}&fp=chrome&type=ws&host=${tunnelDomain}&path=${encodeURIComponent(wsPath)}#${encodeURIComponent(nodeName)}` });
   }
   if (protocols[_CK.p3]?.enabled) {
-    links.push({ name: _PN.d3, protocol: _PN._3, [_KW.lk]: `${_PN._3}://${uuid}:${password}@${connectAddr}:${wsEnabled ? port + 3 : port}#${encodeURIComponent(nodeName)}` });
+    const socksPort = protocols[_CK.p3].port || (wsEnabled ? port + 3 : port);
+    links.push({ name: _PN.d3, protocol: _PN._3, [_KW.lk]: `${_PN._3}://${uuid}:${password}@${connectAddr}:${socksPort}#${encodeURIComponent(nodeName)}` });
   }
   if (u1?.enabled) {
     links.push({ name: _PN.d4, protocol: _PN._4, [_KW.lk]: `${_PN._4}://${password}@${host}:${u1.port || 20000}/?insecure=1&sni=${tunnelDomain}#${encodeURIComponent(nodeName)}` });
@@ -341,7 +343,7 @@ const defaultConfig = {
         [_CK.p0]: { enabled: false, wsPath: _DP._0 },
         [_CK.p1]: { enabled: false, wsPath: _DP._1 },
         [_CK.p2]: { enabled: false, wsPath: _DP._2 },
-        [_CK.p3]: { enabled: false, wsPath: _DP._3 }
+        [_CK.p3]: { enabled: false, wsPath: _DP._3, port: 0 }
       },
       [_CK.p4]: { enabled: false, port: 0 },
       [_CK.p5]: { enabled: false, port: 0 },
@@ -1233,7 +1235,10 @@ const HTML = `<!DOCTYPE html>
                   <label><input type="checkbox" id="t1-p0" \${t.config?.protocols?.['${_CK.p0}']?.enabled ? 'checked' : ''}> ${_PN.d0}</label>
                   <label><input type="checkbox" id="t1-p1" \${t.config?.protocols?.['${_CK.p1}']?.enabled ? 'checked' : ''}> ${_PN.d1}</label>
                   <label><input type="checkbox" id="t1-p2" \${t.config?.protocols?.['${_CK.p2}']?.enabled ? 'checked' : ''}> ${_PN.d2}</label>
-                  <label><input type="checkbox" id="t1-p3" \${t.config?.protocols?.['${_CK.p3}']?.enabled ? 'checked' : ''}> ${_PN.d3}</label>
+                  <div style="display:flex;align-items:center;gap:4px">
+                    <label><input type="checkbox" id="t1-p3" \${t.config?.protocols?.['${_CK.p3}']?.enabled ? 'checked' : ''}> ${_PN.d3}</label>
+                    <input type="number" id="t1-p3-port" placeholder="\u7aef\u53e3" value="\${t.config?.protocols?.['${_CK.p3}']?.port || ''}" style="width:80px;padding:5px">
+                  </div>
                   <div style="display:flex;align-items:center;gap:4px">
                     <label><input type="checkbox" id="t1-p4" \${t.config?.['${_CK.p4}']?.enabled ? 'checked' : ''}> ${_PN.d4}</label>
                     <input type="number" id="t1-p4-port" placeholder="\u7aef\u53e3" value="\${t.config?.['${_CK.p4}']?.port || ''}" style="width:80px;padding:5px">
@@ -1417,7 +1422,7 @@ const HTML = `<!DOCTYPE html>
               ['${_CK.p0}']: { enabled: document.getElementById('t1-p0')?.checked, wsPath: '${_DP._0}' },
               ['${_CK.p1}']: { enabled: document.getElementById('t1-p1')?.checked, wsPath: '${_DP._1}' },
               ['${_CK.p2}']: { enabled: document.getElementById('t1-p2')?.checked, wsPath: '${_DP._2}' },
-              ['${_CK.p3}']: { enabled: document.getElementById('t1-p3')?.checked, wsPath: '${_DP._3}' }
+              ['${_CK.p3}']: { enabled: document.getElementById('t1-p3')?.checked, wsPath: '${_DP._3}', port: parseInt(document.getElementById('t1-p3-port').value) || 0 }
             },
             ['${_CK.p4}']: { enabled: document.getElementById('t1-p4')?.checked, port: parseInt(document.getElementById('t1-p4-port').value) || 0 },
             ['${_CK.p5}']: { enabled: document.getElementById('t1-p5')?.checked, port: parseInt(document.getElementById('t1-p5-port').value) || 0 }
