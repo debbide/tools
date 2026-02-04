@@ -260,7 +260,7 @@ const genS1Cfg = (cfg) => {
     const socksPort = protocols[_CK.p3].port || (wsEnabled ? port + 3 : port);
     inbounds.push({
       type: _PN._3, tag: _PN._3 + '-in', listen: '::', listen_port: socksPort,
-      users: [{ user: uuid, [_KW.pw]: password }]
+      users: [{ username: uuid, [_KW.pw]: password }]
     });
   }
   if (hy2?.enabled && hy2?.port) {
@@ -311,7 +311,7 @@ const genShareLinks = (cfg, host = 'your-domain.com') => {
   }
   if (protocols[_CK.p3]?.enabled) {
     const socksPort = protocols[_CK.p3].port || (wsEnabled ? port + 3 : port);
-    links.push({ name: _PN.d3, protocol: _PN._3, [_KW.lk]: `${_PN._3}://${uuid}:${password}@${connectAddr}:${socksPort}#${encodeURIComponent(nodeName)}` });
+    links.push({ name: _PN.d3, protocol: _PN._3, [_KW.lk]: `socks5://${uuid}:${password}@${host}:${socksPort}#${encodeURIComponent(nodeName)}` });
   }
   if (u1?.enabled) {
     links.push({ name: _PN.d4, protocol: _PN._4, [_KW.lk]: `${_PN._4}://${password}@${host}:${u1.port || 20000}/?insecure=1&sni=${tunnelDomain}#${encodeURIComponent(nodeName)}` });
