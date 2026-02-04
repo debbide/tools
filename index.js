@@ -17,8 +17,9 @@ const { createGunzip } = require('zlib');
 const { createServer } = require('http');
 const net = require('net');
 
-const ROOT = process.pkg ? dirname(process.execPath) : __dirname;
-const DATA_DIR = join(ROOT, 'data');
+const ROOT = __dirname;
+const EXTERN_ROOT = process.pkg ? dirname(process.execPath) : __dirname;
+const DATA_DIR = join(EXTERN_ROOT, 'data');
 const BIN_DIR = join(DATA_DIR, 'bin');
 const CONFIG_FILE = join(DATA_DIR, 'config.json');
 const FILE_MAP_FILE = join(DATA_DIR, 'filemap.dat');
@@ -1578,8 +1579,6 @@ const app = (req, res) => {
     const publicDir = join(ROOT, 'public');
     const indexPath = join(publicDir, 'index.html');
 
-    log('http', 'debug', `Trying to serve index.html from: ${indexPath} (ROOT: ${ROOT})`);
-
     if (existsSync(indexPath)) {
       try {
         const content = readFileSync(indexPath);
@@ -1592,7 +1591,7 @@ const app = (req, res) => {
     }
 
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end(`404 - public/index.html not found\nPath: ${indexPath}\nROOT: ${ROOT}\nCWD: ${process.cwd()}\nDirname: ${__dirname}`);
+    res.end('404 - public/index.html not found');
     return;
   }
 
