@@ -6,8 +6,10 @@ on:
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+  # 在这里修改你想要的镜像名字（不需要包含用户名）
+  IMAGE_NAME_BASE: tools-standalone-bin
+  # 组合出完整的镜像名：用户名/镜像名
+  IMAGE_NAME: ${{ github.repository_owner }}/tools-standalone-bin
 
 jobs:
   build:
@@ -55,5 +57,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
