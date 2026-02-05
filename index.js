@@ -113,7 +113,11 @@ const generateRandomName = (length = 12) => {
   return result;
 };
 
-const XOR_KEY = _d('bWluZWJvdC10b29sYm94LXhvci1rZXktMjAyNA==');
+const _K1 = 'minebot';
+const _K2 = '-toolbox-';
+const _K3 = 'xor-key-';
+const _K4 = '2024';
+const XOR_KEY = [_K1, _K2, _K3, _K4].join('');
 const xorEncrypt = (text) => {
   let result = '';
   for (let i = 0; i < text.length; i++) {
