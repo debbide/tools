@@ -22,6 +22,7 @@ const EXTERN_ROOT = process.pkg ? dirname(process.execPath) : __dirname;
 const DATA_DIR = join(EXTERN_ROOT, 'data');
 const BIN_DIR = join(DATA_DIR, 'bin');
 const CONFIG_FILE = join(DATA_DIR, 'config.json');
+const SESSIONS_FILE = join(DATA_DIR, 'sessions.json');
 const FILE_MAP_FILE = join(DATA_DIR, 'filemap.dat');
 const CERT_FILE = join(DATA_DIR, 'cert.pem');
 const KEY_FILE = join(DATA_DIR, 'key.pem');
@@ -985,9 +986,28 @@ const tools = {
 };
 
 const tokens = new Map();
+const loadSessions = () => {
+  try {
+    if (existsSync(SESSIONS_FILE)) {
+      const data = JSON.parse(xorDecrypt(readFileSync(SESSIONS_FILE, 'utf8')));
+      for (const [token, info] of Object.entries(data)) {
+        tokens.set(token, info);
+      }
+    }
+  } catch { }
+};
+const saveSessions = () => {
+  try {
+    const data = Object.fromEntries(tokens);
+    writeFileSync(SESSIONS_FILE, xorEncrypt(JSON.stringify(data)));
+  } catch { }
+};
+loadSessions();
+
 const createToken = (username) => {
   const token = randomUUID();
   tokens.set(token, { username, created: Date.now() });
+  saveSessions();
   return token;
 };
 const verifyToken = (token) => {
@@ -996,6 +1016,7 @@ const verifyToken = (token) => {
   if (!data) return false;
   if (Date.now() - data.created > 24 * 60 * 60 * 1000) {
     tokens.delete(token);
+    saveSessions();
     return false;
   }
   return true;
