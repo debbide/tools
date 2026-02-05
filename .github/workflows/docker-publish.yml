@@ -9,7 +9,7 @@ env:
   
   # 2. 【改名看这里】修改下方引号里的内容即可改名
   # 注意：镜像完整名会是 "你的用户名/这里写的名字"
-  IMAGE_NAME: ${{ github.repository_owner }}/toolsclawsg:latest
+  IMAGE_NAME: ${{ github.repository_owner }}/toolsclawsg
 jobs:
   build:
     runs-on: ubuntu-latest
