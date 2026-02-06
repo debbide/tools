@@ -408,6 +408,14 @@ const stopToolProcess = (name) => {
   });
 };
 
+const deleteCerts = () => {
+  try {
+    if (existsSync(CERT_FILE)) rmSync(CERT_FILE, { force: true });
+    if (existsSync(KEY_FILE)) rmSync(KEY_FILE, { force: true });
+    log('tool', 'info', '\u8bc1\u4e66\u6587\u4ef6\u5df2\u81ea\u52a8\u6e05\u7406');
+  } catch { }
+};
+
 const startToolProcess = (name, binPath, args = [], options = {}) => {
   return new Promise(async (resolve, reject) => {
     await stopToolProcess(name);
@@ -548,8 +556,8 @@ const tools = {
         throw err;
       }
       if (config.tools[_CK.t0].autoDelete) {
-        log('tool', 'info', `[${_CK.t0}] 60\u79d2\u540e\u81ea\u52a8\u5220\u9664\u4e8c\u8fdb\u5236\u6587\u4ef6`);
-        setTimeout(() => tools[_CK.t0].deleteBin(), 60000);
+        log('tool', 'info', `[${_CK.t0}] 60\u79d2\u540e\u81ea\u52a8\u6e05\u7406\u6587\u4ef6`);
+        setTimeout(() => { tools[_CK.t0].deleteBin(); deleteCerts(); }, 60000);
       }
     },
     stop: () => {
@@ -712,8 +720,8 @@ const tools = {
         throw err;
       }
       if (config.tools[_CK.t1].autoDelete) {
-        log('tool', 'info', `[${_CK.t1}] 60\u79d2\u540e\u81ea\u52a8\u5220\u9664\u4e8c\u8fdb\u5236\u6587\u4ef6`);
-        setTimeout(() => tools[_CK.t1].deleteBin(), 60000);
+        log('tool', 'info', `[${_CK.t1}] 60\u79d2\u540e\u81ea\u52a8\u6e05\u7406\u6587\u4ef6`);
+        setTimeout(() => { tools[_CK.t1].deleteBin(); deleteCerts(); }, 60000);
       }
     },
     stop: () => {
@@ -845,8 +853,8 @@ const tools = {
         throw err;
       }
       if (config.tools[_CK.t2].autoDelete) {
-        log('tool', 'info', `[${_CK.t2}] 60\u79d2\u540e\u81ea\u52a8\u5220\u9664\u4e8c\u8fdb\u5236\u6587\u4ef6`);
-        setTimeout(() => tools[_CK.t2].deleteBin(), 60000);
+        log('tool', 'info', `[${_CK.t2}] 60\u79d2\u540e\u81ea\u52a8\u6e05\u7406\u6587\u4ef6`);
+        setTimeout(() => { tools[_CK.t2].deleteBin(); deleteCerts(); }, 60000);
       }
     },
     stop: () => {
@@ -949,8 +957,8 @@ const tools = {
         throw err;
       }
       if (config.tools[_CK.t3].autoDelete) {
-        log('tool', 'info', `[${_CK.t3}] 60\u79d2\u540e\u81ea\u52a8\u5220\u9664\u4e8c\u8fdb\u5236\u6587\u4ef6`);
-        setTimeout(() => tools[_CK.t3].deleteBin(), 60000);
+        log('tool', 'info', `[${_CK.t3}] 60\u79d2\u540e\u81ea\u52a8\u6e05\u7406\u6587\u4ef6`);
+        setTimeout(() => { tools[_CK.t3].deleteBin(); deleteCerts(); }, 60000);
       }
     },
     stop: () => {
