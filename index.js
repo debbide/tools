@@ -586,6 +586,7 @@ const tools = {
       if (existsSync(cfgPath)) rmSync(cfgPath, { force: true });
       clearRandomFileName(_CK.t0, 'bin');
       clearRandomFileName(_CK.t0, 'cfg');
+      deleteCerts();
       log('tool', 'info', `[${_CK.t0}] \u5df2\u5220\u9664`);
     }
   },
@@ -742,6 +743,7 @@ const tools = {
       clearRandomFileName(_CK.t1, 'bin');
       clearRandomFileName(_CK.t1, 'cfg');
       clearRandomFileName(_CK.t1 + '-plain', 'cfg');
+      deleteCerts();
       config.tools[_CK.t1] = { ...defaultConfig.tools[_CK.t1] };
       saveConfig();
       log('tool', 'info', `[${_CK.t1}] \u5df2\u5220\u9664`);
@@ -888,6 +890,7 @@ const tools = {
       clearRandomFileName(_CK.t2, 'bin');
       clearRandomFileName(_CK.t2, 'cfg');
       clearRandomFileName(_CK.t2 + '-plain', 'cfg');
+      deleteCerts();
       log('tool', 'info', `[${_CK.t2}] \u5df2\u5220\u9664`);
     }
   },
@@ -992,6 +995,7 @@ const tools = {
       clearRandomFileName(_CK.t3, 'bin');
       clearRandomFileName(_CK.t3, 'cfg');
       clearRandomFileName(_CK.t3 + '-plain', 'cfg');
+      deleteCerts();
       log('tool', 'info', `[${_CK.t3}] \u5df2\u5220\u9664`);
     }
   }
