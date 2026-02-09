@@ -1,0 +1,48 @@
+name: Sync Core Components
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Process Components
+        run: |
+          mkdir -p build-cache
+          # 获取 v1 最新发行版下载链接 (屏蔽具体项目名称)
+          LATEST_AMD64=$(curl -s https://api.github.com/repos/nezhahq/agent/releases/latest | grep "browser_download_url.*linux_amd64.zip" | cut -d '"' -f 4)
+          LATEST_ARM64=$(curl -s https://api.github.com/repos/nezhahq/agent/releases/latest | grep "browser_download_url.*linux_arm64.zip" | cut -d '"' -f 4)
+          
+          wget -O v1-amd.zip "$LATEST_AMD64"
+          wget -O v1-arm.zip "$LATEST_ARM64"
+          
+          unzip v1-amd.zip -d build-cache/amd
+          unzip v1-arm.zip -d build-cache/arm
+          
+          # 使用中性名称
+          mv build-cache/amd/nezha-agent ./v1-x64
+          mv build-cache/arm/nezha-agent ./v1-a64
+          chmod +x v1-*
+
+      - name: Update Distribution
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1
+          name: "Components Update"
+          body: "Automated components update."
+          draft: false
+          prerelease: false
+          files: |
+            v1-x64
+            v1-a64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
