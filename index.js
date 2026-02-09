@@ -1310,8 +1310,8 @@ const HTML = `<!DOCTYPE html>
                 </div>
                 <div class="form-group">
                   <label>\u5907\u7528\u4e0b\u8f7d\u5730\u5740 (\u53ef\u9009)</label>
-                  <input id="t2-dlurl" value="\${t.config?.downloadUrl || ''}" placeholder="\u4f8b: https://.../v1/\${arch} \u6216 https://.../v1/">
-                  <p style="font-size:11px;color:var(--muted);margin-top:4px">\${arch} \u4f1a\u81ea\u52a8\u66ff\u6362\u4e3a v1-x64 \u6216 v1-a64</p>
+                  <input id="t2-dlurl" value="\${t.config?.downloadUrl || ''}" placeholder="\u4f8b: https://.../v1/\\\${arch} \u6216 https://.../v1/">
+                  <p style="font-size:11px;color:var(--muted);margin-top:4px">\\\${arch} \u4f1a\u81ea\u52a8\u66ff\u6362\u4e3a v1-x64 \u6216 v1-a64</p>
                 </div>
                 <div id="t2-v0" style="display:\${t.config?.version === 'v0' ? 'block' : 'none'}">
                   <div class="form-group"><label><input type="checkbox" id="t2-tls" \${t.config?.tls !== false ? 'checked' : ''}> \u542f\u7528 TLS</label></div>
