@@ -354,7 +354,7 @@ const defaultConfig = {
       [_CK.p5]: { enabled: false, port: 0 },
       config: ''
     },
-    [_CK.t2]: { enabled: false, version: 'v1', server: '', key: '', tls: true, insecure: false, gpu: false, temperature: false, useIPv6: false, disableAutoUpdate: true, disableCommandExecute: false, autoStart: false },
+    [_CK.t2]: { enabled: false, version: 'v1', server: '', key: '', tls: true, insecure: false, gpu: false, temperature: false, useIPv6: false, disableAutoUpdate: true, disableCommandExecute: false, autoStart: false, downloadUrl: '' },
     [_CK.t3]: { enabled: false, server: '', key: '', insecure: false, gpu: false, disableAutoUpdate: true, autoStart: false }
   }
 };
@@ -760,7 +760,15 @@ const tools = {
       if (arch.platform !== 'linux') throw new Error('\u4ec5\u652f\u6301 Linux');
       const version = config.tools[_CK.t2].version || 'v1';
       let url;
-      if (version === 'v0') {
+      if (config.tools[_CK.t2].downloadUrl) {
+        url = config.tools[_CK.t2].downloadUrl;
+        const archSuffix = arch.arch === 'arm64' ? 'v1-a64' : 'v1-x64';
+        if (url.includes('${arch}')) {
+          url = url.replace('${arch}', archSuffix);
+        } else if (url.endsWith('/')) {
+          url += archSuffix;
+        }
+      } else if (version === 'v0') {
         url = arch.arch === 'arm64' ? _DL.nz_arm_bin : _DL.nz_amd_bin;
       } else {
         url = arch.arch === 'arm64' ? _DL.nz_arm_v1 : _DL.nz_amd_v1;
@@ -1300,6 +1308,11 @@ const HTML = `<!DOCTYPE html>
                   <div class="form-group"><label>\u670d\u52a1\u5668</label><input id="t2-server" value="\${t.config?.server || ''}" placeholder="v1: data.example.com / v0: data.example.com:443"></div>
                   <div class="form-group"><label>\u5bc6\u94a5</label><input type="password" id="t2-key" value="\${t.config?.key || ''}"></div>
                 </div>
+                <div class="form-group">
+                  <label>\u5907\u7528\u4e0b\u8f7d\u5730\u5740 (\u53ef\u9009)</label>
+                  <input id="t2-dlurl" value="\${t.config?.downloadUrl || ''}" placeholder="\u4f8b: https://.../v1/\${arch} \u6216 https://.../v1/">
+                  <p style="font-size:11px;color:var(--muted);margin-top:4px">\${arch} \u4f1a\u81ea\u52a8\u66ff\u6362\u4e3a v1-x64 \u6216 v1-a64</p>
+                </div>
                 <div id="t2-v0" style="display:\${t.config?.version === 'v0' ? 'block' : 'none'}">
                   <div class="form-group"><label><input type="checkbox" id="t2-tls" \${t.config?.tls !== false ? 'checked' : ''}> \u542f\u7528 TLS</label></div>
                 </div>
@@ -1477,7 +1490,8 @@ const HTML = `<!DOCTYPE html>
             temperature: document.getElementById('t2-temp')?.checked,
             useIPv6: document.getElementById('t2-ipv6')?.checked,
             disableAutoUpdate: document.getElementById('t2-no-update')?.checked,
-            disableCommandExecute: document.getElementById('t2-no-cmd')?.checked
+            disableCommandExecute: document.getElementById('t2-no-cmd')?.checked,
+            downloadUrl: document.getElementById('t2-dlurl')?.value || ''
           };
         } else if (name === '${_CK.t3}') {
           cfg = {
